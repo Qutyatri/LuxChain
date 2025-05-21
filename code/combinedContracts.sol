@@ -2,6 +2,12 @@
 pragma solidity ^0.8.0;
 
 contract MintingContract {
+    OwnershipContract public ownershipContract;
+    
+    constructor(address _ownershipContract) {
+        ownershipContract = OwnershipContract(_ownershipContract);
+    }
+
     uint public tokenCount = 0;
 
     struct ProductNFT {
@@ -18,6 +24,10 @@ contract MintingContract {
     function mint(string memory _model, string memory _serialNumber) public {
         tokenCount++;
         nfts[tokenCount] = ProductNFT(tokenCount, _model, _serialNumber, msg.sender);
+        
+        // Set initial owner in OwnershipContract
+        ownershipContract.setInitialOwner(tokenCount, msg.sender);
+        
         emit Minted(tokenCount, _model, _serialNumber, msg.sender);
     }
 
@@ -66,8 +76,6 @@ contract OwnershipContract {
 }
 
 
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
 
 contract VerificationContract {
     address public admin;
@@ -104,5 +112,18 @@ contract VerificationContract {
 
     function checkVerification(uint tokenId) public view returns (bool) {
         return isVerified[tokenId];
+    }
+}
+
+
+contract LuxChainFactory {
+    MintingContract public mintingContract;
+    OwnershipContract public ownershipContract;
+    VerificationContract public verificationContract;
+    
+    constructor() {
+        ownershipContract = new OwnershipContract();
+        mintingContract = new MintingContract(address(ownershipContract));
+        verificationContract = new VerificationContract();
     }
 }
