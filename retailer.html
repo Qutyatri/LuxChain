@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Retailer Panel - LuxChain</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Retailer Panel</h1>
+    <button id="connectBtn">Connect Wallet</button>
+    <p id="walletAddress">Wallet: Not connected</p>
+
+    <div class="card">
+      <h2>Check Product Details</h2>
+      <input type="text" id="productTokenId" placeholder="Token ID (e.g. 0)">
+      <button onclick="getProductInfo()">Get Info</button>
+    </div>
+
+    <div class="card" id="productDetails" style="display: none;">
+      <h3>Product Info:</h3>
+      <p><strong>Model:</strong> <span id="model"></span></p>
+      <p><strong>Serial Number:</strong> <span id="serial"></span></p>
+      <p><strong>Manufacturer:</strong> <span id="manufacturer"></span></p>
+      <p><strong>Current Owner:</strong> <span id="owner"></span></p>
+      <p><strong>Verified:</strong> <span id="verifiedStatus"></span></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("connectBtn").addEventListener("click", connectWallet);
+
+    async function getProductInfo() {
+      const tokenId = document.getElementById("productTokenId").value;
+
+      if (!mintingContract || !ownershipContract || !verificationContract || !account) {
+        alert("Please connect your wallet first.");
+        return;
+      }
+
+      if (!tokenId) {
+        alert("Please enter a token ID.");
+        return;
+      }
+
+      try {
+        const product = await mintingContract.methods.getProductDetails(tokenId).call();
+        const owner = await ownershipContract.methods.getOwner(tokenId).call();
+        const verified = await verificationContract.methods.isVerified(tokenId).call();
+
+        document.getElementById("model").innerText = product.model;
+        document.getElementById("serial").innerText = product.serialNumber;
+        document.getElementById("manufacturer").innerText = product.manufacturer;
+        document.getElementById("owner").innerText = owner;
+        document.getElementById("verifiedStatus").innerText = verified ? "Verified" : "Not Verified";
+
+        document.getElementById("productDetails").style.display = "block";
+      } catch (err) {
+        alert("Failed to fetch product details.");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Authenticator Panel - LuxChain</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Authenticator Panel</h1>
+    <button id="connectBtn">Connect Wallet</button>
+    <p id="walletAddress">Wallet: Not connected</p>
+
+    <div class="card">
+      <h2>Verify Product</h2>
+      <input type="text" id="verifyTokenId" placeholder="Token ID (e.g. 0)">
+      <button onclick="verifyProduct()">Verify</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("connectBtn").addEventListener("click", connectWallet);
+
+    async function verifyProduct() {
+      const tokenId = document.getElementById("verifyTokenId").value;
+
+      if (!verificationContract || !account) {
+        alert("Please connect your wallet first.");
+        return;
+      }
+
+      if (!tokenId) {
+        alert("Please enter a token ID.");
+        return;
+      }
+
+      try {
+        await verificationContract.methods.verifyProduct(tokenId).send({ from: account });
+        alert("✅ Product verified successfully!");
+        document.getElementById("verifyTokenId").value = "";
+      } catch (err) {
+        alert("❌ Failed to verify product. Are you an approved authenticator?");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -63,26 +63,19 @@ const mintingABI = [
 				"name": "getProductDetails",
 				"outputs": [
 					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "model",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "serialNumber",
-								"type": "string"
-							},
-							{
-								"internalType": "address",
-								"name": "manufacturer",
-								"type": "address"
-							}
-						],
-						"internalType": "struct MintingContract.Product",
-						"name": "",
-						"type": "tuple"
+						"internalType": "string",
+						"name": "model",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "serialNumber",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "manufacturer",
+						"type": "address"
 					}
 				],
 				"stateMutability": "view",
