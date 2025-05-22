@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LuxChain Admin Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>LuxChain Admin Panel</h1>
+    <button id="connectBtn">Connect Wallet</button>
+    <p id="walletAddress">Wallet: Not connected</p>
+
+    <div class="card">
+      <h2>Approve Manufacturer</h2>
+      <input type="text" id="manufacturerAddress" placeholder="0x...">
+      <button onclick="approveManufacturer()">Approve Manufacturer</button>
+    </div>
+
+    <div class="card">
+      <h2>Approve Authenticator</h2>
+      <input type="text" id="authenticatorAddress" placeholder="0x...">
+      <button onclick="approveAuthenticator()">Approve Authenticator</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("connectBtn").addEventListener("click", connectWallet);
+
+    async function approveManufacturer() {
+      const address = document.getElementById("manufacturerAddress").value;
+      if (!mintingContract || !account) return alert("Please connect wallet first.");
+
+      try {
+        await mintingContract.methods.approveManufacturer(address).send({ from: account });
+        alert("✅ Manufacturer approved!");
+      } catch (err) {
+        alert("❌ Failed to approve manufacturer.");
+        console.error(err);
+      }
+    }
+
+    async function approveAuthenticator() {
+      const address = document.getElementById("authenticatorAddress").value;
+      if (!verificationContract || !account) return alert("Please connect wallet first.");
+
+      try {
+        await verificationContract.methods.approveAuthenticator(address).send({ from: account });
+        alert("✅ Authenticator approved!");
+      } catch (err) {
+        alert("❌ Failed to approve authenticator.");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
