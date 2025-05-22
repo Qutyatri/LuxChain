@@ -13,15 +13,36 @@
     <button id="connectBtn">Connect Wallet</button>
     <p id="walletAddress">Wallet: Not connected</p>
 
-    <div class="card">
+    <!-- Authenticator-only section -->
+    <div id="authenticatorPanel" class="card" style="display: none;">
       <h2>Verify Product</h2>
       <input type="text" id="verifyTokenId" placeholder="Token ID (e.g. 0)">
       <button onclick="verifyProduct()">Verify</button>
     </div>
+
+    <!-- Not approved message -->
+    <div id="notApprovedMessage" class="card" style="display: none;">
+      <h2>Access Denied</h2>
+      <p>You are not an approved authenticator. Please contact the admin for access.</p>
+    </div>
   </div>
 
   <script>
-    document.getElementById("connectBtn").addEventListener("click", connectWallet);
+    // When connect button is clicked
+    document.getElementById("connectBtn").addEventListener("click", async () => {
+        await connectWallet();
+
+        const isApproved = await isApprovedAuthenticator(account);
+        console.log("Authenticator approved?", isApproved);
+
+        if (isApproved === true || isApproved === "true") {
+          document.getElementById("authenticatorPanel").style.display = "block";
+          document.getElementById("notApprovedMessage").style.display = "none";
+        } else {
+          document.getElementById("authenticatorPanel").style.display = "none";
+          document.getElementById("notApprovedMessage").style.display = "block";
+        }
+      });
 
     async function verifyProduct() {
       const tokenId = document.getElementById("verifyTokenId").value;
@@ -38,10 +59,10 @@
 
       try {
         await verificationContract.methods.verifyProduct(tokenId).send({ from: account });
-        alert("✅ Product verified successfully!");
+        alert("Product verified successfully!");
         document.getElementById("verifyTokenId").value = "";
       } catch (err) {
-        alert("❌ Failed to verify product. Are you an approved authenticator?");
+        alert("Failed to verify product. Are you an approved authenticator?");
         console.error(err);
       }
     }

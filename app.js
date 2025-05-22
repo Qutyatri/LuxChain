@@ -408,3 +408,16 @@ async function isApprovedManufacturer(address) {
 			return false;
 		}
 	}
+
+	async function isApprovedAuthenticator(address) {
+  if (!verificationContract || !address) return false;
+
+  try {
+    const result = await verificationContract.methods.authenticators(address).call();
+    console.log("isApprovedAuthenticator result:", result);
+    return result;
+  } catch (err) {
+    console.error("Error checking authenticator approval:", err);
+    return false;
+  }
+  }
