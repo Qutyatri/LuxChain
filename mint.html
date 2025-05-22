@@ -2,22 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Mint Product NFT - LuxChain</title>
+  <title>Manufacturer Dashboard - LuxChain</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
   <script src="app.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>Mint Luxury Product</h1>
+    <h1>Manufacturer Dashboard</h1>
     <button id="connectBtn">Connect Wallet</button>
     <p id="walletAddress">Wallet: Not connected</p>
 
+    <!-- Mint Section -->
     <div class="card">
-      <h2>Enter Product Details</h2>
+      <h2>Mint Product NFT</h2>
       <input type="text" id="model" placeholder="Product Model (e.g. Rolex Daytona)">
       <input type="text" id="serialNumber" placeholder="Serial Number (e.g. SN123456)">
       <button onclick="mintNFT()">Mint NFT</button>
+    </div>
+
+    <!-- Transfer Section -->
+    <div class="card">
+      <h2>Transfer Ownership</h2>
+      <input type="text" id="tokenId" placeholder="Token ID (e.g. 0)">
+      <input type="text" id="newOwner" placeholder="Retailer Wallet Address (0x...)">
+      <button onclick="transferOwnership()">Transfer</button>
     </div>
   </div>
 
@@ -40,11 +49,36 @@
 
       try {
         await mintingContract.methods.mintNFT(model, serial).send({ from: account });
-        alert("✅ NFT minted successfully!");
+        alert("NFT minted successfully!");
         document.getElementById("model").value = "";
         document.getElementById("serialNumber").value = "";
       } catch (err) {
-        alert("❌ Failed to mint NFT.");
+        alert("Failed to mint NFT.");
+        console.error(err);
+      }
+    }
+
+    async function transferOwnership() {
+      const tokenId = document.getElementById("tokenId").value;
+      const newOwner = document.getElementById("newOwner").value;
+
+      if (!ownershipContract || !account) {
+        alert("Please connect your wallet first.");
+        return;
+      }
+
+      if (!tokenId || !newOwner) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      try {
+        await ownershipContract.methods.transferOwnership(tokenId, newOwner).send({ from: account });
+        alert("Ownership transferred!");
+        document.getElementById("tokenId").value = "";
+        document.getElementById("newOwner").value = "";
+      } catch (err) {
+        alert("Failed to transfer ownership.");
         console.error(err);
       }
     }
