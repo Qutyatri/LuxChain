@@ -387,11 +387,24 @@ async function connectWallet() {
       ownershipContract = new web3.eth.Contract(ownershipABI, ownershipContractAddress);
       verificationContract = new web3.eth.Contract(verificationABI, verificationContractAddress);
 
-      console.log("✅ Wallet connected:", account);
+      console.log("Wallet connected:", account);
     } catch (err) {
-      console.error("❌ Error connecting wallet:", err);
+      console.error("Error connecting wallet:", err);
     }
   } else {
-    alert("⚠️ MetaMask not detected. Please install it to use LuxChain.");
+    alert(" MetaMask not detected. Please install it to use LuxChain.");
   }
 }
+
+async function isApprovedManufacturer(address) {
+		if (!mintingContract || !address) return false;
+
+		try {
+			const result = await mintingContract.methods.manufacturers(address).call();
+			console.log("Manufacturer approval result:", result); 
+			return result;
+		} catch (err) {
+			console.error("Error checking manufacturer approval:", err);
+			return false;
+		}
+	}

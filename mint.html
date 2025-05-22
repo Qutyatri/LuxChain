@@ -5,21 +5,12 @@
   <title>Manufacturer Dashboard - LuxChain</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-  <script src="app.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>Manufacturer Dashboard</h1>
     <button id="connectBtn">Connect Wallet</button>
     <p id="walletAddress">Wallet: Not connected</p>
-
-    <!-- Mint Section -->
-    <div class="card">
-      <h2>Mint Product NFT</h2>
-      <input type="text" id="model" placeholder="Product Model (e.g. Rolex Daytona)">
-      <input type="text" id="serialNumber" placeholder="Serial Number (e.g. SN123456)">
-      <button onclick="mintNFT()">Mint NFT</button>
-    </div>
 
     <!-- Transfer Section -->
     <div class="card">
@@ -28,10 +19,38 @@
       <input type="text" id="newOwner" placeholder="Retailer Wallet Address (0x...)">
       <button onclick="transferOwnership()">Transfer</button>
     </div>
+
+    <!-- For only approved manufacturer-->
+     <div id="manufacturerPanel" class="card" style="display: none;">
+      <h2>Mint Product NFT</h2>
+      <input type="text" id="model" placeholder="Product Model">
+      <input type="text" id="serialNumber" placeholder="Serial Number">
+      <button onclick="mintNFT()">Mint NFT</button>
+    </div>
+
+    <div id="notApprovedMessage" class="card" style="display: none;">
+      <h2>Access Denied</h2>
+      <p>You are not an approved manufacturer. Please contact the admin for access.</p>
+    </div>
   </div>
+  <script src="app.js"></script>
 
   <script>
-    document.getElementById("connectBtn").addEventListener("click", connectWallet);
+    document.getElementById("connectBtn").addEventListener("click", async () => {
+      await connectWallet();
+
+      const isApproved = await isApprovedManufacturer(account);
+      console.log("Is approved manufacturer:", isApproved, typeof isApproved);
+
+      if (isApproved === true || isApproved === "true") {
+        document.getElementById("manufacturerPanel").style.display = "block";
+        document.getElementById("notApprovedMessage").style.display = "none";
+      } else {
+        document.getElementById("manufacturerPanel").style.display = "none";
+        document.getElementById("notApprovedMessage").style.display = "block";
+      }
+    });
+
 
     async function mintNFT() {
       const model = document.getElementById("model").value;
