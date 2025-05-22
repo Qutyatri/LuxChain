@@ -1,53 +1,165 @@
-const contractAddress = "0xF6c59c347b3c7eca3B6d173f46cdb8f1AF25928e";
-const abi = [
-	{
-		"anonymous": false,
-		"inputs": [
+// app.js
+
+let web3;
+let account;
+
+// Replace with your actual deployed contract addresses
+const mintingContractAddress = "0xa401F03046623e5a1CF9F9A8Aa97A93c9FeF4704";
+const verificationContractAddress = "0x6A8708c2a95762C432F138809201dF529bb3B61c";
+
+// Replace with actual ABI arrays from your compiled contracts
+const mintingABI = [
 			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_ownershipAddr",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_verificationAddr",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
 			},
 			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "model",
-				"type": "string"
+				"inputs": [],
+				"name": "admin",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			},
 			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "serialNumber",
-				"type": "string"
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "manufacturer",
+						"type": "address"
+					}
+				],
+				"name": "approveManufacturer",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			},
 			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "Minted",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_id",
-				"type": "uint256"
-			}
-		],
-		"name": "getNFT",
-		"outputs": [
-			{
-				"components": [
+				"inputs": [
 					{
 						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
+					}
+				],
+				"name": "getProductDetails",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "model",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "serialNumber",
+								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "manufacturer",
+								"type": "address"
+							}
+						],
+						"internalType": "struct MintingContract.Product",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "manufacturers",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "model",
+						"type": "string"
 					},
+					{
+						"internalType": "string",
+						"name": "serialNumber",
+						"type": "string"
+					}
+				],
+				"name": "mintNFT",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "nextTokenId",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "ownershipContract",
+				"outputs": [
+					{
+						"internalType": "contract OwnershipContract",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "products",
+				"outputs": [
 					{
 						"internalType": "string",
 						"name": "model",
@@ -60,105 +172,150 @@ const abi = [
 					},
 					{
 						"internalType": "address",
-						"name": "owner",
+						"name": "manufacturer",
 						"type": "address"
 					}
 				],
-				"internalType": "struct MintingContract.ProductNFT",
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_model",
-				"type": "string"
+				"stateMutability": "view",
+				"type": "function"
 			},
 			{
-				"internalType": "string",
-				"name": "_serialNumber",
-				"type": "string"
+				"inputs": [],
+				"name": "verificationContract",
+				"outputs": [
+					{
+						"internalType": "contract VerificationContract",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			}
-		],
-		"name": "mint",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
+		];
+const verificationABI = [
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "nfts",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
 			},
 			{
-				"internalType": "string",
-				"name": "model",
-				"type": "string"
+				"inputs": [],
+				"name": "admin",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			},
 			{
-				"internalType": "string",
-				"name": "serialNumber",
-				"type": "string"
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_authenticator",
+						"type": "address"
+					}
+				],
+				"name": "approveAuthenticator",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			},
 			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "tokenCount",
-		"outputs": [
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "authenticators",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "isVerified",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "verified",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "verifyProduct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-];
+		];
 
-async function mintNFT() {
-  const model = document.getElementById("model").value;
-  const serial = document.getElementById("serial").value;
+let mintingContract;
+let verificationContract;
 
-  if (!window.ethereum) {
-    alert("Please install MetaMask!");
-    return;
-  }
+async function connectWallet() {
+  if (window.ethereum) {
+    try {
+      web3 = new Web3(window.ethereum);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      account = accounts[0];
+      document.getElementById("walletAddress").innerText = `Wallet: ${account}`;
 
-  const web3 = new Web3(window.ethereum);
-  await window.ethereum.request({ method: 'eth_requestAccounts' });
+      mintingContract = new web3.eth.Contract(mintingABI, mintingContractAddress);
+      verificationContract = new web3.eth.Contract(verificationABI, verificationContractAddress);
 
-  const accounts = await web3.eth.getAccounts();
-  const contract = new web3.eth.Contract(abi, contractAddress);
-
-  try {
-    await contract.methods.mint(model, serial).send({ from: accounts[0] });
-    alert("NFT Minted Successfully!");
-  } catch (error) {
-    console.error("Minting failed:", error);
-    alert("Minting failed. See console for details.");
+      console.log("Wallet connected:", account);
+    } catch (err) {
+      console.error("Wallet connection failed:", err);
+    }
+  } else {
+    alert("MetaMask is not installed. Please install it to use LuxChain.");
   }
 }
