@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mint Product NFT - LuxChain</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Mint Luxury Product</h1>
+    <button id="connectBtn">Connect Wallet</button>
+    <p id="walletAddress">Wallet: Not connected</p>
+
+    <div class="card">
+      <h2>Enter Product Details</h2>
+      <input type="text" id="model" placeholder="Product Model (e.g. Rolex Daytona)">
+      <input type="text" id="serialNumber" placeholder="Serial Number (e.g. SN123456)">
+      <button onclick="mintNFT()">Mint NFT</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("connectBtn").addEventListener("click", connectWallet);
+
+    async function mintNFT() {
+      const model = document.getElementById("model").value;
+      const serial = document.getElementById("serialNumber").value;
+
+      if (!mintingContract || !account) {
+        alert("Please connect your wallet first.");
+        return;
+      }
+
+      if (!model || !serial) {
+        alert("Please fill in both model and serial number.");
+        return;
+      }
+
+      try {
+        await mintingContract.methods.mintNFT(model, serial).send({ from: account });
+        alert("✅ NFT minted successfully!");
+        document.getElementById("model").value = "";
+        document.getElementById("serialNumber").value = "";
+      } catch (err) {
+        alert("❌ Failed to mint NFT.");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
