@@ -34,6 +34,7 @@
       <input type="text" id="model" placeholder="Product Model">
       <input type="text" id="serialNumber" placeholder="Serial Number">
       <button onclick="mintNFT()">Mint NFT</button>
+      <p id="mintResult">Mint result: N/A</p>
     </div>
 
     <div id="notApprovedMessage" class="card" style="display: none;">
@@ -75,10 +76,21 @@
       }
 
       try {
-        await mintingContract.methods.mintNFT(model, serial).send({ from: account });
-        alert("NFT minted successfully!");
-        document.getElementById("model").value = "";
-        document.getElementById("serialNumber").value = "";
+        const receipt = await mintingContract.methods
+        .mintNFT(model, serial)
+        .send({ from: account });
+
+        const event = receipt.events.NFTMinted;
+        const tokenId = event.returnValues.tokenId;
+
+         // Show alert and update page text
+         alert(`NFT minted successfully!\nToken ID: ${tokenId}`);
+         document.getElementById("mintResult").innerText = `Minted successfully! Token ID: ${tokenId}`;
+
+         // Clear inputs
+         document.getElementById("model").value = "";
+         document.getElementById("serialNumber").value = "";
+        
       } catch (err) {
         alert("Failed to mint NFT.");
         console.error(err);
