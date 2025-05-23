@@ -27,6 +27,21 @@
       <p><strong>Current Owner:</strong> <span id="owner"></span></p>
       <p><strong>Verified:</strong> <span id="verifiedStatus"></span></p>
     </div>
+
+    <div class="card">
+      <h2>Transfer Ownership</h2>
+      <input type="text" id="tokenId" placeholder="Token ID (e.g. 0)">
+      <input type="text" id="newOwner" placeholder="Retailer Wallet Address (0x...)">
+      <button onclick="transferOwnership()">Transfer</button>
+    </div>
+
+    <div class="card">
+      <h2>Check Token Ownership</h2>
+      <input type="text" id="checkTokenId" placeholder="Enter Token ID (e.g. 0)">
+      <button onclick="checkTokenOwner()">Check Owner</button>
+      <p id="ownerResult">Owner: N/A</p>
+    </div>
+
   </div>
 
   <script>
@@ -76,8 +91,57 @@
       } catch (err) {
         alert("Failed to fetch product details. Invalid token or error occurred.");
         console.error(err);
-        document.getElementById("productDetails").style.display = "none";
+          document.getElementById("productDetails").style.display = "none";
+        }
       }
+  
+        async function transferOwnership() {
+        const tokenId = document.getElementById("tokenId").value;
+        const newOwner = document.getElementById("newOwner").value;
+
+      if (!ownershipContract || !account) {
+        alert("Please connect your wallet first.");
+        return;
+      }
+
+      if (!tokenId || !newOwner) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      try {
+        await ownershipContract.methods.transferOwnership(tokenId, newOwner).send({ from: account });
+        alert("Ownership transferred!");
+        document.getElementById("tokenId").value = "";
+        document.getElementById("newOwner").value = "";
+      } catch (err) {
+        alert("Failed to transfer ownership.");
+        console.error(err);
+      }
+    }
+
+    async function checkTokenOwner() {
+    const tokenId = document.getElementById("checkTokenId").value;
+
+      if (!ownershipContract) {
+        alert("Ownership contract not loaded.");
+        return;
+      }
+
+      if (!tokenId) {
+        alert("Please enter a Token ID.");
+        return;
+      }
+
+      try {
+        const owner = await ownershipContract.methods.getOwner(tokenId).call();
+        document.getElementById("ownerResult").innerText = `Owner: ${owner}`;
+      } catch (err) {
+        alert("Failed to fetch owner. Token may not exist.");
+        console.error(err);
+        document.getElementById("ownerResult").innerText = "Owner: Error";
+      }
+
     }
   </script>
 </body>
