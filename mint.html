@@ -20,6 +20,14 @@
       <button onclick="transferOwnership()">Transfer</button>
     </div>
 
+    <!-- Check Owner Section -->
+    <div class="card">
+      <h2>Check Token Ownership</h2>
+      <input type="text" id="checkTokenId" placeholder="Enter Token ID (e.g. 0)">
+      <button onclick="checkTokenOwner()">Check Owner</button>
+      <p id="ownerResult">Owner: N/A</p>
+    </div>
+
     <!-- For only approved manufacturer-->
      <div id="manufacturerPanel" class="card" style="display: none;">
       <h2>Mint Product NFT</h2>
@@ -99,6 +107,29 @@
       } catch (err) {
         alert("Failed to transfer ownership.");
         console.error(err);
+      }
+    }
+
+    async function checkTokenOwner() {
+    const tokenId = document.getElementById("checkTokenId").value;
+
+      if (!ownershipContract) {
+        alert("Ownership contract not loaded.");
+        return;
+      }
+
+      if (!tokenId) {
+        alert("Please enter a Token ID.");
+        return;
+      }
+
+      try {
+        const owner = await ownershipContract.methods.getOwner(tokenId).call();
+        document.getElementById("ownerResult").innerText = `Owner: ${owner}`;
+      } catch (err) {
+        alert("Failed to fetch owner. Token may not exist.");
+        console.error(err);
+        document.getElementById("ownerResult").innerText = "Owner: Error";
       }
     }
   </script>

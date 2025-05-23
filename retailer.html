@@ -31,9 +31,16 @@
 
   <script>
     document.getElementById("connectBtn").addEventListener("click", connectWallet);
-
+// to check error in console
     async function getProductInfo() {
-      const tokenId = document.getElementById("productTokenId").value;
+      const tokenId = document.getElementById("productTokenId").value.trim();
+      console.log("Entered Token ID:", tokenId);
+      console.log("Connected Account:", account);
+      console.log("Contracts Loaded:", {
+      minting: !!mintingContract,
+      ownership: !!ownershipContract,
+      verification: !!verificationContract
+    });
 
       if (!mintingContract || !ownershipContract || !verificationContract || !account) {
         alert("Please connect your wallet first.");
@@ -46,8 +53,17 @@
       }
 
       try {
-        const product = await mintingContract.methods.getProductDetails(tokenId).call();
         const owner = await ownershipContract.methods.getOwner(tokenId).call();
+
+      // Check if the connected wallet is the actual owner
+      if (owner.toLowerCase() !== account.toLowerCase()) {
+        alert("You are not the current owner of this product.");
+        document.getElementById("productDetails").style.display = "none";
+        return;
+      }
+
+        //If owner, fetch product details
+        const product = await mintingContract.methods.getProductDetails(tokenId).call();
         const verified = await verificationContract.methods.isVerified(tokenId).call();
 
         document.getElementById("model").innerText = product.model;
@@ -58,8 +74,9 @@
 
         document.getElementById("productDetails").style.display = "block";
       } catch (err) {
-        alert("Failed to fetch product details.");
+        alert("Failed to fetch product details. Invalid token or error occurred.");
         console.error(err);
+        document.getElementById("productDetails").style.display = "none";
       }
     }
   </script>

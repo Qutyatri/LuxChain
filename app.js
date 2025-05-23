@@ -4,9 +4,9 @@ let web3;
 let account;
 
 
-const mintingContractAddress = "0xa401F03046623e5a1CF9F9A8Aa97A93c9FeF4704";
-const ownershipContractAddress = "0xDA0bab807633f07f013f94DD0E6A4F96F8742B53";
-const verificationContractAddress = "0x6A8708c2a95762C432F138809201dF529bb3B61c";
+const mintingContractAddress = "0xDB4d913853bAcb86d77F96802B90872E12908eEE";
+const ownershipContractAddress = "0xeB0517E5261555EC5BBD33Beb97fa323a8e5662F";
+const verificationContractAddress = "0x659DFf47F89d85cfD99Ffab6A355F4774f3aD3D8";
 
 
 const mintingABI = [
@@ -371,7 +371,7 @@ let mintingContract;
 let ownershipContract;
 let verificationContract;
 
-// 🔌 Connect to MetaMask and initialize contracts
+// Connect to MetaMask and initialize contracts
 async function connectWallet() {
   if (window.ethereum) {
     try {
