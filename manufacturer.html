@@ -34,7 +34,7 @@
       <input type="text" id="model" placeholder="Product Model">
       <input type="text" id="serialNumber" placeholder="Serial Number">
       <button onclick="mintNFT()">Mint NFT</button>
-      <p id="mintResult">Mint result: N/A</p>
+      <p id="mintedTokenId">Token ID: N/A</p>
     </div>
 
     <div id="notApprovedMessage" class="card" style="display: none;">
@@ -75,26 +75,29 @@
         return;
       }
 
+      
       try {
-        const receipt = await mintingContract.methods
-        .mintNFT(model, serial)
-        .send({ from: account });
-
-        const event = receipt.events.NFTMinted;
-        const tokenId = event.returnValues.tokenId;
-
-         // Show alert and update page text
-         alert(`NFT minted successfully!\nToken ID: ${tokenId}`);
-         document.getElementById("mintResult").innerText = `Minted successfully! Token ID: ${tokenId}`;
-
-         // Clear inputs
-         document.getElementById("model").value = "";
-         document.getElementById("serialNumber").value = "";
-        
-      } catch (err) {
+  
+    // Get current token ID before minting
+    const currentTokenId = await mintingContract.methods.nextTokenId().call();
+    
+    // Mint the NFT
+    await mintingContract.methods.mintNFT(model, serial).send({ from: account });
+    
+    // Display success message with token ID
+    document.getElementById("mintedTokenId").innerText = `Token ID: ${currentTokenId}`;
+    alert(`NFT minted successfully! Token ID: ${currentTokenId}`);
+    
+    // Clear input fields
+    document.getElementById("model").value = "";
+    document.getElementById("serialNumber").value = "";
+  } 
+      
+      catch (err) {
         alert("Failed to mint NFT.");
         console.error(err);
       }
+      
     }
 
     async function transferOwnership() {
