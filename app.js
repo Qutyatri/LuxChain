@@ -4,9 +4,9 @@ let web3;
 let account;
 
 
-const mintingContractAddress = "0xDB4d913853bAcb86d77F96802B90872E12908eEE";
-const ownershipContractAddress = "0xeB0517E5261555EC5BBD33Beb97fa323a8e5662F";
-const verificationContractAddress = "0x659DFf47F89d85cfD99Ffab6A355F4774f3aD3D8";
+const mintingContractAddress = "0xf373c4C04f7a2cC191618c91C66740f2640193A5";
+const ownershipContractAddress = "0xc5C97aB82c3f508b25a070AAb6d8B67F3b278037";
+const verificationContractAddress = "0x8B65C802dDF4aa0A9e98Afc02Fc721a0cF9BF7F5";
 
 
 const mintingABI = [
@@ -211,11 +211,54 @@ const ownershipABI = [
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "getOwnershipHistory",
+				"outputs": [
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
 					}
 				],
 				"name": "nftOwners",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "ownershipHistory",
 				"outputs": [
 					{
 						"internalType": "address",
