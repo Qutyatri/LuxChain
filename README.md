@@ -10,28 +10,33 @@
 
 ## Features
 
-1. **Mint NFTs**  
+1. **Access Granted by Admin**
+   Admin approves manufacturers and authenticators 
+2. **Mint NFTs**  
    Whitelisted manufacturers create NFTs that carry detailed product information.
-2. **Transfer Ownership**  
+3. **Transfer Ownership**  
    NFTs move from manufacturers → retailers → buyers using a secure, on-chain transfer function.
-3. **Optional Verification**  
+4. **Optional Verification**  
    Certified authenticators can inspect items and update the NFT’s verification status when requested.
-4. **History Tracking**  
+5. **History Tracking**  
    Anyone can view an item’s creation date, ownership chain, and verification records directly on the blockchain.
 
 ---
 
 ## Stakeholders & Roles
 
-| Role             | Responsibility                                                                 |
-|------------------|--------------------------------------------------------------------------------|
-| **Admin**        | Deploys contracts; whitelists manufacturers and authenticators                  |
-| **Manufacturer** | Mints NFTs for luxury goods; transfers them to retailers                        |
-| **Retailer**     | Receives NFTs; may request verification; transfers NFTs to buyers               |
-| **Authenticator**| Verifies physical items and updates on-chain status                             |
-| **Buyer**        | Holds the NFT; can view product history and resell it                           |
 
----
+1. **Admin**  
+  Deploys contracts; whitelists manufacturers and authenticators                  
+2. **Manufacturer**
+  Mints NFTs for luxury goods; transfers them to retailers                        
+3. **Retailer**      
+  Receives NFTs; may request verification; transfers NFTs to buyers               
+4. **Authenticator** 
+  Verifies physical items and updates on-chain status                             
+5. **Buyer**        
+  Holds the NFT; can view product history and resell it                           
+
 
 ## Smart Contracts
 
@@ -46,28 +51,6 @@ All contracts are written in Solidity and are designed to be **modular** and **u
 3. **VerificationContract.sol**  
    - `verifyToken(tokenId, status)` – Whitelisted authenticators update verification status
 
----
-
-## Project Structure
-
-```plaintext
-LuxChain/
-├── contracts/               # Solidity smart contracts
-│   ├── MintingContract.sol
-│   ├── OwnershipContract.sol
-│   └── VerificationContract.sol
-├── frontend/                # Optional front-end interface
-│   ├── index.html
-│   ├── app.js
-│   └── abi/
-│       ├── MintingContract.json
-│       ├── OwnershipContract.json
-│       └── VerificationContract.json
-├── README.md                # This file
-└── demo-video.mp4           # One-minute demo video
-```
-
----
 
 ## Running the Smart Contracts (Remix IDE)
 
@@ -77,14 +60,11 @@ Go to: [https://remix.ethereum.org](https://remix.ethereum.org)
 
 ### Load Contracts
 
-Create the following files and paste the code:
-- `MintingContract.sol`
-- `VerificationContract.sol`
-- `OwnershipContract.sol`
+Create `contracts.sol` file in Remix and paste the code of *contracts.sol*.
 
 ### Compile Contracts
 
-Make sure the correct Solidity version is selected for each file before compiling.
+Make sure the correct Solidity version is selected for file before compiling.
 
 ### Select Environment
 
@@ -93,9 +73,9 @@ Make sure the correct Solidity version is selected for each file before compilin
 
 ### Deploy in Order
 
-1. Deploy `MintingContract`
+1. Deploy `OwnershipContract`
 2. Deploy `VerificationContract`
-3. Deploy `OwnershipContract`
+3. Deploy `MintingContract`(Before deploying insert address of deployed OwnershipContract and VerificationContract)
 
 ### Assign Roles (Remix Accounts)
 
@@ -109,13 +89,14 @@ Use different accounts in Remix for each stakeholder:
 ### Test Workflow
 
 - Admin whitelists Manufacturer and Authenticator
-- Manufacturer calls `mint(...)` with product metadata
-- Retailer receives NFT and may call `verifyToken(...)`
-- Retailer or Buyer calls `transferNFT(...)` to complete the ownership change
+- Manufacturer calls `mint(...)` with product metadata to create new NFT and calls `setInitialOwner(...)` to set up itself as owner of product
+- Manufacturer calls `transferOwnership(...)` 
+- Retailer receives NFT with its ownership and may calls `verifyToken(...)`
+- Authenticator calls `verifyProduct(...)` (optional)
 
 ---
 
-## Running the Front-End (Optional)
+## Running the Front-End 
 
 A simple Web3.js-based front-end allows interaction with the smart contracts through a browser.
 
@@ -127,7 +108,7 @@ A simple Web3.js-based front-end allows interaction with the smart contracts thr
 ### Setup & Launch
 
 ```bash
-cd LuxChain/frontend
+cd LuxChain/Frontend
 npm install          # Install dependencies
 npm start            # Start local development server
 
@@ -147,7 +128,7 @@ Open the URL printed by the dev server in your terminal (e.g., `http://127.0.0.1
 
 Make sure your MetaMask wallet is set to the **same test network** you used to deploy the contracts in Remix (e.g., Goerli or Sepolia).
 
-### 3. Update Contract Details in `app.js`
+### 3. Update Contract Details in `app.js` 
 
 Replace the placeholders in your front-end code with the actual deployed contract addresses and ABI imports:
 
@@ -156,22 +137,17 @@ const MINTING_CONTRACT_ADDRESS      = '0xYourMintAddress';
 const VERIFICATION_CONTRACT_ADDRESS = '0xYourVerifyAddress';
 const OWNERSHIP_CONTRACT_ADDRESS    = '0xYourOwnAddress';
 
-import MintingABI      from './abi/MintingContract.json';
-import VerificationABI from './abi/VerificationContract.json';
-import OwnershipABI    from './abi/OwnershipContract.json';
+import mintingABI      from './abi/mintingContract.json';
+import verificationABI from './abi/verificationContract.json';
+import ownershipABI    from './abi/ownershipContract.json';
 ```
 
----
 
 ### 4. Interact with the UI
 
 Once everything is configured:
 
-- **Mint** a new NFT
-- **Verify** an existing NFT (only if your MetaMask account is whitelisted as an Authenticator)
-- **Transfer** the NFT to another address
-
-Follow the same flow you tested in Remix to confirm everything works end-to-end.
+Follow the same flow you tested in Remix but this time you are having UI to perform tasks or to call functions.
    
 ---
 
