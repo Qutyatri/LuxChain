@@ -113,7 +113,8 @@ npm install          # Install dependencies
 npm start            # Start local development server
 
 # OR, for static sites:
-npx live-server
+type "cmd" in your path where Frontend folder is located
+lite-server
 ```
 
 ---
@@ -147,7 +148,7 @@ import ownershipABI    from './abi/ownershipContract.json';
 
 Once everything is configured:
 
-Follow the same flow you tested in Remix but this time you are having UI to perform tasks or to call functions.
+Follow the same test flow in Remix but this time you are having UI to perform tasks or to call functions.
    
 ---
 
