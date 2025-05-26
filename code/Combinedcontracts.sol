@@ -2,28 +2,37 @@
 pragma solidity ^0.8.24;
 
 contract OwnershipContract {
-    mapping(uint256 => address) public nftOwners;
+    mapping(uint256 => address) public nftOwners; // Maps tokenId to current owners address
+    mapping(uint256 => address[]) public ownershipHistory; // Maps tokenId to list of previous owners
 
+// transfers ownership to new address
     function transferOwnership(uint256 tokenId, address newOwner) external {
         require(msg.sender == nftOwners[tokenId], "Only owner can transfer");
+        ownershipHistory[tokenId].push(msg.sender);
         nftOwners[tokenId] = newOwner;
-    }
+    } 
 
+// returns current owner of a token
     function getOwner(uint256 tokenId) external view returns (address) {
         return nftOwners[tokenId];
     }
 
-    // Called by MintingContract to set the manufacturer as the initial owner
+// Called by MintingContract to set the manufacturer as the initial owner
     function setInitialOwner(uint256 tokenId, address owner) external {
         require(nftOwners[tokenId] == address(0), "Already assigned");
         nftOwners[tokenId] = owner;
+    }
+
+// returns past owners of the token
+     function getOwnershipHistory(uint256 tokenId) external view returns (address[] memory) {
+        return ownershipHistory[tokenId];
     }
 }
 
 contract VerificationContract {
     address public admin;
-    mapping(address => bool) public authenticators;
-    mapping(uint256 => bool) public verified;
+    mapping(address => bool) public authenticators; // maps approved authenticators
+    mapping(uint256 => bool) public verified;// maps the verification status of the product
 
     modifier onlyAuthenticator() {
         require(authenticators[msg.sender], "Not an authenticator");
@@ -74,12 +83,14 @@ contract MintingContract {
         _;
     }
 
+
     constructor(address _ownershipAddr, address _verificationAddr) {
         admin = msg.sender;
         ownershipContract = OwnershipContract(_ownershipAddr);
         verificationContract = VerificationContract(_verificationAddr);
     }
 
+// for admin to approve manufacturer
     function approveManufacturer(address manufacturer) external onlyAdmin {
         manufacturers[manufacturer] = true;
     }
@@ -90,6 +101,7 @@ contract MintingContract {
         ownershipContract.setInitialOwner(tokenId, msg.sender);
     }
 
+// to get the product details by using tokenId
     function getProductDetails(uint256 tokenId) public view returns (
         string memory model,
         string memory serialNumber,
