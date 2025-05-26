@@ -41,12 +41,18 @@
       <button onclick="checkTokenOwner()">Check Owner</button>
       <p id="ownerResult">Owner: N/A</p>
     </div>
-
+    <div class="card">
+      <h2>Check Past Owners</h2>
+      <input type="text" id="historyTokenId" placeholder="Enter Token ID (e.g. 0)">
+      <button onclick="checkOwnershipHistory()">Check History</button>
+      <div id="historyResult">
+      <p>History: <span id="ownersHistory">N/A</span></p>
+    </div>
   </div>
 
   <script>
     document.getElementById("connectBtn").addEventListener("click", connectWallet);
-// to check error in console
+    // to check error in console
     async function getProductInfo() {
       const tokenId = document.getElementById("productTokenId").value.trim();
       console.log("Entered Token ID:", tokenId);
@@ -142,6 +148,33 @@
         document.getElementById("ownerResult").innerText = "Owner: Error";
       }
 
+    }
+
+    async function checkOwnershipHistory() {
+      const tokenId = document.getElementById("historyTokenId").value;
+
+      if (!ownershipContract) {
+        alert("Ownership contract not loaded.");
+        return;
+      }
+
+      if (!tokenId) {
+        alert("Please enter a Token ID.");
+        return;
+      }
+
+      try {
+        const pastOwners = await ownershipContract.methods.getOwnershipHistory(tokenId).call();
+        if (pastOwners.length === 0) {
+          document.getElementById("ownersHistory").innerText = "No past owners found.";
+        } else {
+          document.getElementById("ownersHistory").innerText = pastOwners.join(", ");
+        }
+      } catch (err) {
+        alert("Failed to fetch ownership history.");
+        console.error(err);
+        document.getElementById("ownersHistory").innerText = "Error fetching history.";
+      }
     }
   </script>
 </body>
