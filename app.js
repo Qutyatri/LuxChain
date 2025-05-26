@@ -3,13 +3,13 @@
 let web3;
 let account;
 
-
+// Contract addresses (deployed on the blockchain) 
 const mintingContractAddress = "0xf373c4C04f7a2cC191618c91C66740f2640193A5";
 const ownershipContractAddress = "0xc5C97aB82c3f508b25a070AAb6d8B67F3b278037";
 const verificationContractAddress = "0x8B65C802dDF4aa0A9e98Afc02Fc721a0cF9BF7F5";
 
-
-const mintingABI = [
+// ABI for mintingContract
+const mintingABI = [ //Constructor takes ownership and verification contract addresses
 			{
 				"inputs": [
 					{
@@ -187,7 +187,7 @@ const mintingABI = [
 				"type": "function"
 			}
 		];
-const ownershipABI = [
+const ownershipABI = [// ABI for ownershipContract
 			{
 				"inputs": [
 					{
@@ -306,7 +306,7 @@ const ownershipABI = [
 				"type": "function"
 			}
 		];
-const verificationABI = [
+const verificationABI = [ // ABI for verificationContract
 			{
 				"inputs": [],
 				"stateMutability": "nonpayable",
@@ -414,7 +414,7 @@ let mintingContract;
 let ownershipContract;
 let verificationContract;
 
-// Connect to MetaMask and initialize contracts
+// To Connect to MetaMask and initialize contracts
 async function connectWallet() {
   if (window.ethereum) {
     try {
@@ -423,9 +423,10 @@ async function connectWallet() {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       account = accounts[0];
 
+			// Displays wallet address
       document.getElementById("walletAddress").innerText = `Wallet: ${account}`;
 
-      // Create contract instances
+      // Creates contract instances
       mintingContract = new web3.eth.Contract(mintingABI, mintingContractAddress);
       ownershipContract = new web3.eth.Contract(ownershipABI, ownershipContractAddress);
       verificationContract = new web3.eth.Contract(verificationABI, verificationContractAddress);
@@ -439,6 +440,7 @@ async function connectWallet() {
   }
 }
 
+// To check if the address is an approved manufacturer
 async function isApprovedManufacturer(address) {
 		if (!mintingContract || !address) return false;
 
@@ -452,7 +454,8 @@ async function isApprovedManufacturer(address) {
 		}
 	}
 
-	async function isApprovedAuthenticator(address) {
+// To check if the address is an approved authenticator
+async function isApprovedAuthenticator(address) {
   if (!verificationContract || !address) return false;
 
   try {
@@ -463,4 +466,4 @@ async function isApprovedManufacturer(address) {
     console.error("Error checking authenticator approval:", err);
     return false;
   }
-  }
+}
