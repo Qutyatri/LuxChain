@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>LuxChain Dashboard</title>
+
+  <!-- CSS and Web3.js -->
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 </head>
@@ -12,19 +14,21 @@
     <h1>LuxChain</h1>
     <p>Authenticate Luxury Goods with Blockchain</p>
 
+    <!-- Button to connect MetaMask wallet -->
     <button id="connectBtn">Connect MetaMask</button>
     <p id="walletAddress">Wallet: Not connected</p>
 
+    <!-- Navigation links to role-specific panels -->
     <nav class="role-nav">
       <a href="admin.html" class="admin">Admin</a>
       <a href="manufacturer.html" class="manufacturer">Manufacturer</a>
       <a href="retailer.html" class="retailer">Retailer</a>
       <a href="authenticator.html" class="authenticator">Authenticator</a>
-      
     </nav>
   </div>
 
   <script>
+    // Handle MetaMask wallet connection
     document.getElementById("connectBtn").addEventListener("click", async () => {
       if (window.ethereum) {
         try {

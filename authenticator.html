@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Authenticator Panel - LuxChain</title>
+
+  <!-- Styles and blockchain libraries -->
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
   <script src="app.js"></script>
@@ -10,17 +12,19 @@
 <body>
   <div class="container">
     <h1>Authenticator Panel</h1>
+
+    <!-- Wallet connection -->
     <button id="connectBtn">Connect Wallet</button>
     <p id="walletAddress">Wallet: Not connected</p>
 
-    <!-- Authenticator-only section -->
+    <!-- Shown only if user is an approved authenticator -->
     <div id="authenticatorPanel" class="card" style="display: none;">
       <h2>Verify Product</h2>
       <input type="text" id="verifyTokenId" placeholder="Token ID (e.g. 0)">
       <button onclick="verifyProduct()">Verify</button>
     </div>
 
-    <!-- Not approved message -->
+    <!-- Shown if the wallet is not whitelisted -->
     <div id="notApprovedMessage" class="card" style="display: none;">
       <h2>Access Denied</h2>
       <p>You are not an approved authenticator. Please contact the admin for access.</p>
@@ -28,13 +32,14 @@
   </div>
 
   <script>
-    // If clicked connect button 
+    // On wallet connect, check if the user is an approved authenticator
     document.getElementById("connectBtn").addEventListener("click", async () => {
         await connectWallet();
 
         const isApproved = await isApprovedAuthenticator(account);
         console.log("Authenticator approved?", isApproved);
 
+        // Show verification panel only if approved
         if (isApproved === true || isApproved === "true") {
           document.getElementById("authenticatorPanel").style.display = "block";
           document.getElementById("notApprovedMessage").style.display = "none";
@@ -44,6 +49,7 @@
         }
       });
 
+    // Trigger on 'Verify' button click — calls smart contract to verify the product
     async function verifyProduct() {
       const tokenId = document.getElementById("verifyTokenId").value;
 

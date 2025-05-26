@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Retailer Panel - LuxChain</title>
+
+  <!-- CSS styling and Web3 for blockchain interactions -->
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
   <script src="app.js"></script>
@@ -10,15 +12,19 @@
 <body>
   <div class="container">
     <h1>Retailer Panel</h1>
+
+    <!-- Wallet connect button -->
     <button id="connectBtn">Connect Wallet</button>
     <p id="walletAddress">Wallet: Not connected</p>
 
+    <!-- Section: Retrieve product details by token ID -->
     <div class="card">
       <h2>Check Product Details</h2>
       <input type="text" id="productTokenId" placeholder="Token ID (e.g. 0)">
       <button onclick="getProductInfo()">Get Info</button>
     </div>
 
+    <!-- Display product information once fetched -->
     <div class="card" id="productDetails" style="display: none;">
       <h3>Product Info:</h3>
       <p><strong>Model:</strong> <span id="model"></span></p>
@@ -28,6 +34,7 @@
       <p><strong>Verified:</strong> <span id="verifiedStatus"></span></p>
     </div>
 
+    <!-- Section: Transfer ownership of a token -->
     <div class="card">
       <h2>Transfer Ownership</h2>
       <input type="text" id="tokenId" placeholder="Token ID (e.g. 0)">
@@ -35,33 +42,32 @@
       <button onclick="transferOwnership()">Transfer</button>
     </div>
 
+    <!-- Section: Check current owner of a token -->
     <div class="card">
       <h2>Check Token Ownership</h2>
       <input type="text" id="checkTokenId" placeholder="Enter Token ID (e.g. 0)">
       <button onclick="checkTokenOwner()">Check Owner</button>
       <p id="ownerResult">Owner: N/A</p>
     </div>
+
+    <!-- Section: View ownership history for a token -->
     <div class="card">
       <h2>Check Past Owners</h2>
       <input type="text" id="historyTokenId" placeholder="Enter Token ID (e.g. 0)">
       <button onclick="checkOwnershipHistory()">Check History</button>
       <div id="historyResult">
-      <p>History: <span id="ownersHistory">N/A</span></p>
+        <p>History: <span id="ownersHistory">N/A</span></p>
+      </div>
     </div>
   </div>
 
   <script>
+    // Connect wallet on button click
     document.getElementById("connectBtn").addEventListener("click", connectWallet);
-    // to check error in console
+
+    // Get product details (if caller is owner)
     async function getProductInfo() {
       const tokenId = document.getElementById("productTokenId").value.trim();
-      console.log("Entered Token ID:", tokenId);
-      console.log("Connected Account:", account);
-      console.log("Contracts Loaded:", {
-      minting: !!mintingContract,
-      ownership: !!ownershipContract,
-      verification: !!verificationContract
-    });
 
       if (!mintingContract || !ownershipContract || !verificationContract || !account) {
         alert("Please connect your wallet first.");
@@ -76,14 +82,14 @@
       try {
         const owner = await ownershipContract.methods.getOwner(tokenId).call();
 
-      // Check if the connected wallet is the actual owner
-      if (owner.toLowerCase() !== account.toLowerCase()) {
-        alert("You are not the current owner of this product.");
-        document.getElementById("productDetails").style.display = "none";
-        return;
-      }
+        // Ensure current user is the product owner
+        if (owner.toLowerCase() !== account.toLowerCase()) {
+          alert("You are not the current owner of this product.");
+          document.getElementById("productDetails").style.display = "none";
+          return;
+        }
 
-        //If owner, fetch product details
+        // Fetch and display product details
         const product = await mintingContract.methods.getProductDetails(tokenId).call();
         const verified = await verificationContract.methods.isVerified(tokenId).call();
 
@@ -97,13 +103,14 @@
       } catch (err) {
         alert("Failed to fetch product details. Invalid token or error occurred.");
         console.error(err);
-          document.getElementById("productDetails").style.display = "none";
-        }
+        document.getElementById("productDetails").style.display = "none";
       }
-  
-        async function transferOwnership() {
-        const tokenId = document.getElementById("tokenId").value;
-        const newOwner = document.getElementById("newOwner").value;
+    }
+
+    // Transfer ownership of a product to another wallet
+    async function transferOwnership() {
+      const tokenId = document.getElementById("tokenId").value;
+      const newOwner = document.getElementById("newOwner").value;
 
       if (!ownershipContract || !account) {
         alert("Please connect your wallet first.");
@@ -126,8 +133,9 @@
       }
     }
 
+    // Check current owner of a specific token ID
     async function checkTokenOwner() {
-    const tokenId = document.getElementById("checkTokenId").value;
+      const tokenId = document.getElementById("checkTokenId").value;
 
       if (!ownershipContract) {
         alert("Ownership contract not loaded.");
@@ -147,9 +155,9 @@
         console.error(err);
         document.getElementById("ownerResult").innerText = "Owner: Error";
       }
-
     }
 
+    // Display all past owners of the token
     async function checkOwnershipHistory() {
       const tokenId = document.getElementById("historyTokenId").value;
 
